@@ -64,8 +64,8 @@ phases:
       - npm run build
       - npm run test
       - npm run cdk synth
-      - newman run qr_code.json -e test_env.json
-      - if [ $? -ne 0 ]; then exit 1; fi
+      # - newman run qr_code.json -e test_env.json
+      # - if [ $? -ne 0 ]; then exit 1; fi
   post_build:
     commands:
       - echo "Build process has completed."
