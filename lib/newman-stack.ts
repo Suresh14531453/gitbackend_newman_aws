@@ -19,6 +19,34 @@ export class NewmanStack extends cdk.Stack {
         "build-specs/cdk-newman-spec.yml"
       )
     })
+    const collection_file="../qr_code.json"
+    const env_file="../test_env.json"
+    const project = new PipelineProject(this, 'MyPipelineProject', {
+      buildSpec: BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          install: {
+            commands: [
+              'echo Installing Newman...',
+              'npm install -g newman'
+            ]
+          },
+          build: {
+            commands: [
+              'echo Running collections...',
+              `newman run ${collection_file} -e ${env_file}`,
+              'if [ $? -ne 0 ]; then exit 1; fi'
+            ]
+          },
+          post_build: {
+            commands: [
+              'echo Build completed successfully.'
+            ]
+          }
+        }
+      })
+    });
+
     const cdkSourceOutput = new Artifact("CDKSourceOutput")
     pipeline.addStage({
       stageName: "Source",
