@@ -27,36 +27,36 @@ export class NewmanStack extends cdk.Stack {
     const collection_file = "E:\newman\newman\qr_code.json"
     const env_file = "E:\newman\newman\test_env.json"
     const runCommand = `newman run ${collection_file} -e ${env_file}`;
-    const project = new PipelineProject(this, 'MyPipelineProject', {
-      buildSpec: BuildSpec.fromObject({
-        version: '0.2',
-        phases: {
-          install: {
-            commands: [
-              'echo Installing Newman...',
-              'npm install -g newman -f'
-            ]
-          },
-          build: {
-            commands: [
-              // 'echo Running collections...',
-              `newman run ${collection_file} -e ${env_file}`,
-               'if [ $? -ne 0 ]; then exit 1; fi'
-              // 'newman run qr_code.json -e test_env.json'
-            ]
-          },
-          // post_build: {
-          //   commands: [
-          //     'echo Build completed successfully.'
-          //   ]
-          // }
-          environment: {
-            buildImage: LinuxBuildImage.STANDARD_5_0
-          }
+    // const project = new PipelineProject(this, 'MyPipelineProject', {
+    //   buildSpec: BuildSpec.fromObject({
+    //     version: '0.2',
+    //     phases: {
+    //       install: {
+    //         commands: [
+    //           'echo Installing Newman...',
+    //           'npm install -g newman -f'
+    //         ]
+    //       },
+    //       build: {
+    //         commands: [
+    //           // 'echo Running collections...',
+    //           `newman run ${collection_file} -e ${env_file}`,
+    //            'if [ $? -ne 0 ]; then exit 1; fi'
+    //           // 'newman run qr_code.json -e test_env.json'
+    //         ]
+    //       },
+    //       // post_build: {
+    //       //   commands: [
+    //       //     'echo Build completed successfully.'
+    //       //   ]
+    //       // }
+    //       environment: {
+    //         buildImage: LinuxBuildImage.STANDARD_5_0
+    //       }
 
-        }
-      })
-    });
+    //     }
+    //   })
+    // });
     exec(runCommand, (error, stdout, stderr) => {
       if (error) {
         console.error(`Execution error: ${error}`);
@@ -127,9 +127,16 @@ export class NewmanStack extends cdk.Stack {
       actions: [
         new CodeBuildAction({
           actionName: "Test_stage",
+          project: new PipelineProject(this, "CdkBuildProject", {
+            environment: {
+              buildImage: LinuxBuildImage.STANDARD_5_0,
+            },
+            buildSpec: BuildSpec.fromSourceFilename(
+              "build-specs/cdk-newman-spec.yml"
+            ),
+          }),
           input: cdkBuildOutput,
           outputs: [testOutput],
-          project: project
         }),
       ]
     })
