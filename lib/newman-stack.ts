@@ -34,15 +34,20 @@ export class NewmanStack extends cdk.Stack {
           build: {
             commands: [
               'echo Running collections...',
-              `newman run ${collection_file} -e ${env_file}`,
-              'if [ $? -ne 0 ]; then exit 1; fi'
+              // `newman run ${collection_file} -e ${env_file}`,
+              // 'if [ $? -ne 0 ]; then exit 1; fi'
+              'newman run qr_code.json -e test_env.json'
             ]
           },
-          post_build: {
-            commands: [
-              'echo Build completed successfully.'
-            ]
+          // post_build: {
+          //   commands: [
+          //     'echo Build completed successfully.'
+          //   ]
+          // }
+          environment: {
+            buildImage: LinuxBuildImage.STANDARD_5_0
           }
+    
         }
       })
     });
@@ -110,7 +115,7 @@ export class NewmanStack extends cdk.Stack {
           actionName: "Test_stage",
           input: cdkBuildOutput,
           outputs: [testOutput],
-          project,
+          project:project
         }),
       ]
     })
