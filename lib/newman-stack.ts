@@ -4,11 +4,16 @@ import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-cod
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
+import { exec } from "child_process";
+
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class NewmanStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    
+
     const pipeline = new Pipeline(this, "newmanPipeline", {
       pipelineName: 'newmanpipeline',
       crossAccountKeys: false,
@@ -19,8 +24,9 @@ export class NewmanStack extends cdk.Stack {
         "build-specs/cdk-newman-spec.yml"
       )
     })
-    const collection_file = "../qr_code.json"
-    const env_file = "../test_env.json"
+    const collection_file = "E:\newman\newman\qr_code.json"
+    const env_file = "E:\newman\newman\test_env.json"
+    const runCommand = `newman run ${collection_file} -e ${env_file}`;
     const project = new PipelineProject(this, 'MyPipelineProject', {
       buildSpec: BuildSpec.fromObject({
         version: '0.2',
@@ -34,9 +40,9 @@ export class NewmanStack extends cdk.Stack {
           build: {
             commands: [
               // 'echo Running collections...',
-              // `newman run ${collection_file} -e ${env_file}`,
-              // 'if [ $? -ne 0 ]; then exit 1; fi'
-              'newman run qr_code.json -e test_env.json'
+              `newman run ${collection_file} -e ${env_file}`,
+               'if [ $? -ne 0 ]; then exit 1; fi'
+              // 'newman run qr_code.json -e test_env.json'
             ]
           },
           // post_build: {
@@ -47,9 +53,17 @@ export class NewmanStack extends cdk.Stack {
           environment: {
             buildImage: LinuxBuildImage.STANDARD_5_0
           }
-    
+
         }
       })
+    });
+    exec(runCommand, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Execution error: ${error}`);
+        return;
+      }
+    
+      console.log(`Output: ${stdout}`);
     });
 
     const cdkSourceOutput = new Artifact("CDKSourceOutput")
@@ -115,7 +129,7 @@ export class NewmanStack extends cdk.Stack {
           actionName: "Test_stage",
           input: cdkBuildOutput,
           outputs: [testOutput],
-          project:project
+          project: project
         }),
       ]
     })
