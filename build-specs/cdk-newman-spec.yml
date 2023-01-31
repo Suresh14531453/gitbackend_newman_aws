@@ -1,54 +1,76 @@
-# # version: 0.2
+# # # version: 0.2
 
-# # phases:
-# #   install:
-# #     commands:
-# #       - npm install
-# #       - npm install -g newman
-# #   build:
-# #     commands:
-# #       - newman run NewmanStack.template.json
-# #       - newman run collection.json -e NewmanStack.template.json --reporters cli,junit --reporter-junit-export test-results.xml
-# #       - npm run build 
-# #       - npm run test 
-# #       - npm run cdk -- synth
+# # # phases:
+# # #   install:
+# # #     commands:
+# # #       - npm install
+# # #       - npm install -g newman
+# # #   build:
+# # #     commands:
+# # #       - newman run NewmanStack.template.json
+# # #       - newman run collection.json -e NewmanStack.template.json --reporters cli,junit --reporter-junit-export test-results.xml
+# # #       - npm run build 
+# # #       - npm run test 
+# # #       - npm run cdk -- synth
 
-# #   artifacts:
-# #   base-directory: cdk.out
-# #   files:
-# #     - '**/*'
+# # #   artifacts:
+# # #   base-directory: cdk.out
+# # #   files:
+# # #     - '**/*'
 
-# # # reports:
-# # #   jest_reports:
-# # #     files:
-# # #       - 'test-report.xml'
-# # #     file-format: JUNITXML
-# # #     base-directory: 'test-reports'
+# # # # reports:
+# # # #   jest_reports:
+# # # #     files:
+# # # #       - 'test-report.xml'
+# # # #     file-format: JUNITXML
+# # # #     base-directory: 'test-reports'
+# version: 0.2
+
+# phases:
+#   install:
+#     commands:
+#       - npm install -g npm
+#       - npm install
+#       - npm install -g newman -f
+#   build:
+#     commands:
+#       - npm run build 
+#       - npm run test 
+#       - npm run cdk -- synth
+#       - newman run qr_code.json -e test_env.json
+#       - if [ $? -ne 0 ]; then exit 1; fi
+# artifacts:
+#   base-directory: cdk.out
+#   files:
+#     - '*/'
+#       post_build:
+#     commands:
+
+# # reports:
+# #   jest_reports:
+# #     files:
+# #       - 'test-report.xml'
+# #     file-format: JUNITXML
+# #     base-directory: 'test-reports'
 version: 0.2
 
 phases:
   install:
     commands:
-      - npm install -g npm
       - npm install
-      - npm install -g newman -f
+      - npm install -g newman
   build:
     commands:
-      - npm run build 
-      - npm run test 
-      - npm run cdk -- synth
+      - npm run build
+      - npm run test
+      - npm run cdk synth
       - newman run qr_code.json -e test_env.json
       - if [ $? -ne 0 ]; then exit 1; fi
+  post_build:
+    commands:
+      - echo "Build process has completed."
+
 artifacts:
   base-directory: cdk.out
   files:
     - '*/'
-      post_build:
-    commands:
-
-# reports:
-#   jest_reports:
-#     files:
-#       - 'test-report.xml'
-#     file-format: JUNITXML
-#     base-directory: 'test-reports'
