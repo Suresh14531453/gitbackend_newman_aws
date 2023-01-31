@@ -28,12 +28,12 @@ export class NewmanStack extends cdk.Stack {
           install: {
             commands: [
               'echo Installing Newman...',
-              'npm install -g newman'
+              'npm install -g newman -f'
             ]
           },
           build: {
             commands: [
-              'echo Running collections...',
+              // 'echo Running collections...',
               // `newman run ${collection_file} -e ${env_file}`,
               // 'if [ $? -ne 0 ]; then exit 1; fi'
               'newman run qr_code.json -e test_env.json'
