@@ -127,7 +127,7 @@ export class NewmanStack extends cdk.Stack {
       actions: [
         new CodeBuildAction({
           actionName: "Test_stage",
-          project: new PipelineProject(this, "CdkBuildProject", {
+          project: new PipelineProject(this, "CdkBuildProject1", {
             environment: {
               buildImage: LinuxBuildImage.STANDARD_5_0,
             },
