@@ -14,11 +14,11 @@ export class NewmanStack extends cdk.Stack {
       crossAccountKeys: false,
       restartExecutionOnUpdate: true,
     })
-    // const testProject = new PipelineProject(this, 'TestProject', {
-    //   buildSpec: BuildSpec.fromSourceFilename(
-    //     "build-specs/cdk-newman-spec.yml"
-    //   )
-    // })
+    const testProject = new PipelineProject(this, 'TestProject', {
+      buildSpec: BuildSpec.fromSourceFilename(
+        "build-specs/cdk-newman-spec.yml"
+      )
+    })
     const cdkSourceOutput = new Artifact("CDKSourceOutput")
     pipeline.addStage({
       stageName: "Source",
@@ -55,26 +55,26 @@ export class NewmanStack extends cdk.Stack {
       ]
     })
     const testOutput=new Artifact("testArtifact")
-    pipeline.addStage(
-      {
-        stageName: 'Test',
-        actions: [
-          new CodeBuildAction({
-            actionName: 'Test',
-            project: new PipelineProject(this, "CdkBuildProject1", {
-              environment: {
-                buildImage: LinuxBuildImage.STANDARD_5_0,
-              },
-              buildSpec: BuildSpec.fromSourceFilename(
-                "build-specs/cdk-newman-spec.yml"
-              ),
-            }),
-            input: cdkBuildOutput,
-            outputs:[testOutput]
-          }),
-        ],
-      },
-    )
+    // pipeline.addStage(
+    //   {
+    //     stageName: 'Test',
+    //     actions: [
+    //       new CodeBuildAction({
+    //         actionName: 'Test',
+    //         project: new PipelineProject(this, "CdkBuildProject1", {
+    //           environment: {
+    //             buildImage: LinuxBuildImage.STANDARD_5_0,
+    //           },
+    //           buildSpec: BuildSpec.fromSourceFilename(
+    //             "build-specs/cdk-newman-spec.yml"
+    //           ),
+    //         }),
+    //         input: cdkBuildOutput,
+    //         outputs:[testOutput]
+    //       }),
+    //     ],
+    //   },
+    // )
     pipeline.addStage({
       stageName:"update",
       actions:[
