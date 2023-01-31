@@ -19,8 +19,8 @@ export class NewmanStack extends cdk.Stack {
         "build-specs/cdk-newman-spec.yml"
       )
     })
-    const collection_file="../qr_code.json"
-    const env_file="../test_env.json"
+    const collection_file = "../qr_code.json"
+    const env_file = "../test_env.json"
     const project = new PipelineProject(this, 'MyPipelineProject', {
       buildSpec: BuildSpec.fromObject({
         version: '0.2',
@@ -82,7 +82,7 @@ export class NewmanStack extends cdk.Stack {
         }),
       ]
     })
-    const testOutput=new Artifact("testArtifact")
+    const testOutput = new Artifact("testArtifact")
     // pipeline.addStage(
     //   {
     //     stageName: 'Test',
@@ -104,19 +104,30 @@ export class NewmanStack extends cdk.Stack {
     //   },
     // )
     pipeline.addStage({
-      stageName:"update",
-      actions:[
+      stageName: "Test_stage",
+      actions: [
+        new CodeBuildAction({
+          actionName: "Test_stage",
+          input: cdkBuildOutput,
+          outputs: [testOutput],
+          project,
+        }),
+      ]
+    })
+    pipeline.addStage({
+      stageName: "update",
+      actions: [
         new CloudFormationCreateUpdateStackAction({
-          actionName:"PipelineUpdate",
-          stackName:"NewmanStack",
-          templatePath:cdkBuildOutput.atPath("NewmanStack.template.json"),
-          adminPermissions:true
+          actionName: "PipelineUpdate",
+          stackName: "NewmanStack",
+          templatePath: cdkBuildOutput.atPath("NewmanStack.template.json"),
+          adminPermissions: true
         })
       ]
     })
-    
+
   }
   //////////////////
 
-/////////////////////
+  /////////////////////
 }
